@@ -29,6 +29,8 @@ void destroy_node(struct node *node)
 
 	destroy_window(node->window);
 
+	wl_list_remove(&node->link);
+
 	free(node);
 }
 
@@ -81,7 +83,6 @@ bool insert_node(const struct server *server, struct node **root,
 
 		other_child->parent = (*root);
 		child->parent = (*root);
-
 
 		if (config->split == VERTICAL)
 		{

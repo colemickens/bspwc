@@ -19,6 +19,7 @@ struct desktop* create_desktop(struct output *output)
 	desktop->previous = NULL;
 
 	desktop->root = NULL;
+	wl_list_init(&desktop->nodes);
 
 	return desktop;
 }

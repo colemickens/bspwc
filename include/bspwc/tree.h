@@ -17,6 +17,8 @@ struct node
 	struct node *parent;
 	struct node *left;
 	struct node *right;
+
+	struct wl_list link; // desktop::nodes
 };
 
 struct node *create_node();

@@ -197,6 +197,8 @@ void handle_xdg_shell_v6_surface(struct wl_listener *listener, void *data)
 		wlr_log(WLR_ERROR, "Failed to insert window into desktop");
 		destroy_window(window);
 	}
+
+	wl_list_insert(&output->desktop->nodes, &child->link);
 }
 
 struct wlr_box get_size_wlr_xdg_surface_v6(struct wlr_xdg_surface_v6
