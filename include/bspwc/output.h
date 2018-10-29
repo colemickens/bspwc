@@ -25,7 +25,7 @@ struct output
 	struct wl_listener destroy;
 	struct wl_listener frame;
 
-	struct wl_list link; // server::outputs
+	struct wl_list link; // backend::outputs
 };
 
 void output_destroy_notify(struct wl_listener* listener, void* data);
