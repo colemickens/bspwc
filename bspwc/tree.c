@@ -53,7 +53,7 @@ bool insert_node(const struct server *server, struct node **root,
 		*root = child;
 
 		// TODO: padding
-		position_window((*root)->window, 0, 0);
+		set_window_position((*root)->window, 0, 0);
 		resize_window((*root)->window, output->wlr_output->width,
 				output->wlr_output->height);
 	}
@@ -87,11 +87,12 @@ bool insert_node(const struct server *server, struct node **root,
 		if (config->split == VERTICAL)
 		{
 			// Resize left
-			position_window((*root)->left->window, x, y);
+			set_window_position((*root)->left->window, x, y);
 			resize_window((*root)->left->window, (width / 2), height);
 
 			// Resize right
-			position_window((*root)->right->window, x + ((double)width / 2), y);
+			set_window_position((*root)->right->window, x + ((double)width / 2),
+					y);
 			resize_window((*root)->right->window, (width / 2), height);
 		}
 		else // config->split == HORIZONTAL
