@@ -85,3 +85,26 @@ void render_surface(struct wlr_output *wlr_output,
 		render_surface(wlr_output, wlr_subsurface->surface, pos_x, pos_y);
 	}
 }
+
+struct window *window_at(const struct backend *backend, const double x,
+		const double y)
+{
+	struct output *output = NULL;
+	wl_list_for_each(output, &backend->outputs, link)
+	{
+		struct node *node = NULL;
+		wl_list_for_each(node, &output->desktop->nodes, link)
+		{
+			struct window *window = node->window;
+
+			struct wlr_box box;
+			get_window_box(window, &box);
+			if (wlr_box_contains_point(&box, x, y))
+			{
+				return window;
+			}
+		}
+	}
+
+	return NULL;
+}

@@ -51,5 +51,7 @@ void destroy_backend(struct backend *backend);
 
 void render_surface(struct wlr_output *wlr_output,
 		struct wlr_surface *wlr_surface, const int x, const int y);
+struct window *window_at(const struct backend *backend, const double x,
+		const double y);
 
 #endif // BACKEND_H
