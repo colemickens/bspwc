@@ -96,6 +96,10 @@ struct window *window_at(const struct backend *backend, const double x,
 		wl_list_for_each(node, &output->desktop->nodes, link)
 		{
 			struct window *window = node->window;
+			if (window == NULL)
+			{
+				continue;
+			}
 
 			struct wlr_box box;
 			get_window_box(window, &box);
