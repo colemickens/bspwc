@@ -1,6 +1,6 @@
 #include "bspwc/tree.h"
 
-struct node *create_node()
+struct node *create_node(struct desktop *desktop)
 {
 	wlr_log(WLR_DEBUG, "Creating node");
 	struct node *node = malloc(sizeof(struct node));
@@ -10,6 +10,8 @@ struct node *create_node()
 	node->parent = NULL;
 	node->left = NULL;
 	node->right = NULL;
+
+	wl_list_insert(&desktop->nodes, &node->link);
 
 	return node;
 }
@@ -66,7 +68,7 @@ bool insert_node(const struct server *server, struct node **root,
 		uint32_t width = (*root)->window->width;
 		uint32_t height = (*root)->window->height;
 
-		struct node* other_child = create_node();
+		struct node* other_child = create_node(output->desktop);
 		other_child->window = (*root)->window;
 		(*root)->window = NULL;
 
@@ -105,7 +107,6 @@ bool insert_node(const struct server *server, struct node **root,
 	return true;
 }
 
-static int time_log = 0;
 void render_tree(const struct node *root)
 {
 	if (root == NULL)
@@ -115,17 +116,6 @@ void render_tree(const struct node *root)
 
 	if (root->window != NULL)
 	{
-		time_log++;
-
-		// TODO: Remove before merge
-		if (time_log == 120)
-		{
-			wlr_log(WLR_INFO, "Rendering %p %f,%f %lu,%lu", root->window,
-					root->window->x, root->window->y, (unsigned long)root->window->width,
-					(unsigned long)root->window->height);
-			
-			time_log = 0;
-		}
 		render_window(root->window);
 	}
 	else // root->window == NULL

@@ -21,7 +21,7 @@ struct node
 	struct wl_list link; // desktop::nodes
 };
 
-struct node *create_node();
+struct node *create_node(struct desktop *desktop);
 void destroy_node(struct node *node);
 
 bool insert_node(const struct server *server, struct node **root,
