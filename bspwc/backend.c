@@ -101,8 +101,7 @@ struct window *window_at(const struct backend *backend, const double x,
 				continue;
 			}
 
-			struct wlr_box box;
-			get_window_box(window, &box);
+			struct wlr_box box = get_window_box(window);
 			if (wlr_box_contains_point(&box, x, y))
 			{
 				return window;

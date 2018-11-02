@@ -37,12 +37,16 @@ void destroy_window(struct window *window)
 	free(window);
 }
 
-void get_window_box(const struct window *window, struct wlr_box *box)
+struct wlr_box get_window_box(const struct window *window)
 {
-	box->x = window->x;
-	box->y = window->y;
-	box->width = window->width;
-	box->height = window->height;
+	struct wlr_box box = {
+		.x = window->x,
+		.y = window->y,
+		.width = window->width,
+		.height = window->height,
+	};
+
+	return box;
 }
 
 void set_window_position(struct window *window, const double x, const double y)
