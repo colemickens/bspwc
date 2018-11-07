@@ -7,6 +7,8 @@ void handle_cursor_motion(struct wl_listener *listener, void *data)
 
 	wlr_cursor_move(cursor->wlr_cursor, event->device, event->delta_x,
 			event->delta_y);
+
+	cursor_motion(cursor, event->time_msec);
 }
 
 void handle_cursor_motion_absolute(struct wl_listener *listener, void *data)
@@ -16,6 +18,8 @@ void handle_cursor_motion_absolute(struct wl_listener *listener, void *data)
 
 	wlr_cursor_warp_absolute(cursor->wlr_cursor, event->device, event->x,
 			event->y);
+
+	cursor_motion(cursor, event->time_msec);
 }
 
 void handle_cursor_button(struct wl_listener *listener, void *data)
@@ -40,7 +44,31 @@ void handle_cursor_axis(struct wl_listener *listener, void *data)
 
 void cursor_motion(struct cursor *cursor, uint32_t time)
 {
+	const struct backend *backend = cursor->input->server->backend;
+	struct wlr_seat *seat = cursor->input->seat;
 
+	struct window *window = window_at(backend, cursor->wlr_cursor->x,
+			cursor->wlr_cursor->y);
+
+	if (window != NULL)
+	{
+		wlr_log(WLR_DEBUG, "Window under cursor is %p", (void*)window);
+		struct wlr_surface *surface = window->wlr_surface;
+
+		wlr_seat_pointer_notify_enter(seat, surface, cursor->wlr_cursor->x,
+				cursor->wlr_cursor->y);
+		if (seat->pointer_state.focused_surface != surface)
+		{
+			/* The enter event contains coordinates, so we only need to notify
+			 * on motion if the focus did not change. */
+			wlr_seat_pointer_notify_motion(seat, time, cursor->wlr_cursor->x,
+				cursor->wlr_cursor->y);
+		}
+	}
+	else
+	{
+		wlr_seat_pointer_clear_focus(seat);
+	}
 }
 
 struct cursor *create_cursor(struct input *input,
