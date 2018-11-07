@@ -49,9 +49,8 @@ void handle_cursor_axis(struct wl_listener *listener, void *data)
 	struct wlr_seat *seat = cursor->input->seat;
 	struct wlr_event_pointer_axis *event = data;
 
-	wlr_seat_pointer_notify_axis(seat,
-			event->time_msec, event->orientation, event->delta,
-			event->delta_discrete, event->source);
+	wlr_seat_pointer_notify_axis(seat, event->time_msec, event->orientation,
+			event->delta, event->delta_discrete, event->source);
 
 }
 

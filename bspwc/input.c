@@ -29,12 +29,15 @@ void handle_new_input(struct wl_listener *listener, void *data)
 	wlr_log(WLR_DEBUG, "New input device: %s (%s) %d:%d", device->name,
 			device_type(type), device->vendor, device->product);
 
+	uint32_t caps = 0;
 	if (type == WLR_INPUT_DEVICE_KEYBOARD)
 	{
 		if (input->keyboard == NULL)
 		{
 			input->keyboard = create_keyboard(input, device);
 		}
+
+		caps |= WL_SEAT_CAPABILITY_KEYBOARD;
 	}
 	else if (WLR_INPUT_DEVICE_POINTER)
 	{
@@ -42,12 +45,16 @@ void handle_new_input(struct wl_listener *listener, void *data)
 		{
 			input->cursor = create_cursor(input, device);
 		}
+
+		caps |= WL_SEAT_CAPABILITY_POINTER;
 	}
 	else
 	{
 		wlr_log(WLR_INFO, "Device %s (%s) not implemented",
 				device->name, device_type(type));
 	}
+
+	wlr_seat_set_capabilities(input->seat, caps);
 }
 
 void handle_request_cursor(struct wl_listener *listener, void *data)
