@@ -25,7 +25,11 @@ void handle_cursor_motion_absolute(struct wl_listener *listener, void *data)
 void handle_cursor_button(struct wl_listener *listener, void *data)
 {
 	struct cursor *cursor = wl_container_of(listener, cursor, button);
+	struct wlr_seat *seat = cursor->input->seat;
 	struct wlr_event_pointer_button *event = data;
+
+	wlr_seat_pointer_notify_button(seat, event->time_msec, event->button,
+			event->state);
 
 	if (event->state == WLR_BUTTON_RELEASED)
 	{
@@ -40,7 +44,16 @@ void handle_cursor_button(struct wl_listener *listener, void *data)
 }
 
 void handle_cursor_axis(struct wl_listener *listener, void *data)
-{}
+{
+	struct cursor *cursor = wl_container_of(listener, cursor, button);
+	struct wlr_seat *seat = cursor->input->seat;
+	struct wlr_event_pointer_axis *event = data;
+
+	wlr_seat_pointer_notify_axis(seat,
+			event->time_msec, event->orientation, event->delta,
+			event->delta_discrete, event->source);
+
+}
 
 void cursor_motion(struct cursor *cursor, uint32_t time)
 {
