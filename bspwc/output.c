@@ -28,9 +28,11 @@ void output_frame_notify(struct wl_listener* listener, void* data)
 		wlr_renderer_clear(renderer, color);
 
 		render_tree(output->desktop->root);
+		wlr_output_render_software_cursors(wlr_output, NULL);
 
 		wlr_output_swap_buffers(wlr_output, NULL, NULL);
 	wlr_renderer_end(renderer);
+
 }
 
 void new_output_notify(struct wl_listener* listener, void* data)
