@@ -59,7 +59,17 @@ void handle_new_input(struct wl_listener *listener, void *data)
 
 void handle_request_cursor(struct wl_listener *listener, void *data)
 {
-	wlr_log(WLR_INFO, "TODO: handle_request_cursor");
+	wlr_log(WLR_DEBUG, "Input request cursor");
+	struct input *input = wl_container_of(listener, input, request_cursor);
+	struct wlr_seat_pointer_request_set_cursor_event *event = data;
+	struct wlr_seat_client *focused_client =
+		input->seat->pointer_state.focused_client;
+
+	if (focused_client == event->seat_client)
+	{
+		wlr_cursor_set_surface(input->cursor->wlr_cursor, event->surface,
+				event->hotspot_x, event->hotspot_y);
+	}
 }
 
 struct input *create_input(struct server *server)

@@ -3,12 +3,15 @@
 
 #include <stdbool.h>
 
+#include "bspwc/desktop.h"
 #include "bspwc/config.h"
 #include "bspwc/server.h"
 #include "bspwc/window.h"
 
+struct desktop;
 struct server;
 struct backend;
+
 
 struct node
 {
