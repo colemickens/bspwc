@@ -53,5 +53,6 @@ void render_surface(struct wlr_output *wlr_output,
 		struct wlr_surface *wlr_surface, const int x, const int y);
 struct window *window_at(const struct backend *backend, const double x,
 		const double y);
+void focus_window(struct backend *backend, struct window *window);
 
 #endif // BACKEND_H
