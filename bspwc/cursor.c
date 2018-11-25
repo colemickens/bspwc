@@ -22,6 +22,37 @@ void handle_cursor_motion_absolute(struct wl_listener *listener, void *data)
 	cursor_motion(cursor, event->time_msec);
 }
 
+void cursor_motion(struct cursor *cursor, uint32_t time)
+{
+	const struct backend *backend = cursor->input->server->backend;
+	struct wlr_seat *seat = cursor->input->seat;
+
+	struct window *window = window_at(backend, cursor->wlr_cursor->x,
+			cursor->wlr_cursor->y);
+
+	if (window != NULL)
+	{
+		struct wlr_surface *surface = window->wlr_surface;
+		bool focus_changed = seat->pointer_state.focused_surface != surface;
+
+		wlr_seat_pointer_notify_enter(seat, surface, cursor->wlr_cursor->x,
+				cursor->wlr_cursor->y);
+		if (!focus_changed)
+		{
+			wlr_seat_pointer_notify_motion(seat, time, cursor->wlr_cursor->x,
+				cursor->wlr_cursor->y);
+		}
+		else
+		{
+			wlr_log(WLR_DEBUG, "Window under cursor is %p", (void*)window);
+		}
+	}
+	else
+	{
+		wlr_seat_pointer_clear_focus(seat);
+	}
+}
+
 void handle_cursor_button(struct wl_listener *listener, void *data)
 {
 	struct cursor *cursor = wl_container_of(listener, cursor, button);
@@ -39,7 +70,10 @@ void handle_cursor_button(struct wl_listener *listener, void *data)
 	else // event->state == WLR_BUTTON_PRESSED
 	{
 		wlr_log(WLR_DEBUG, "Cursor %p pressed", (void*)cursor);
-		wlr_log(WLR_INFO, "TODO: handle_cursor_button WLR_BUTTON_PRESSED");
+		struct backend *backend = cursor->input->server->backend;
+		struct window *window = window_at(backend, cursor->wlr_cursor->x,
+			cursor->wlr_cursor->y);
+		focus_window(backend, window);
 	}
 }
 
@@ -52,35 +86,6 @@ void handle_cursor_axis(struct wl_listener *listener, void *data)
 	wlr_seat_pointer_notify_axis(seat, event->time_msec, event->orientation,
 			event->delta, event->delta_discrete, event->source);
 
-}
-
-void cursor_motion(struct cursor *cursor, uint32_t time)
-{
-	const struct backend *backend = cursor->input->server->backend;
-	struct wlr_seat *seat = cursor->input->seat;
-
-	struct window *window = window_at(backend, cursor->wlr_cursor->x,
-			cursor->wlr_cursor->y);
-
-	if (window != NULL)
-	{
-		wlr_log(WLR_DEBUG, "Window under cursor is %p", (void*)window);
-		struct wlr_surface *surface = window->wlr_surface;
-
-		wlr_seat_pointer_notify_enter(seat, surface, cursor->wlr_cursor->x,
-				cursor->wlr_cursor->y);
-		if (seat->pointer_state.focused_surface != surface)
-		{
-			/* The enter event contains coordinates, so we only need to notify
-			 * on motion if the focus did not change. */
-			wlr_seat_pointer_notify_motion(seat, time, cursor->wlr_cursor->x,
-				cursor->wlr_cursor->y);
-		}
-	}
-	else
-	{
-		wlr_seat_pointer_clear_focus(seat);
-	}
 }
 
 struct cursor *create_cursor(struct input *input,
