@@ -73,7 +73,7 @@ void handle_cursor_button(struct wl_listener *listener, void *data)
 		struct backend *backend = cursor->input->server->backend;
 		struct window *window = window_at(backend, cursor->wlr_cursor->x,
 			cursor->wlr_cursor->y);
-		focus_window(backend, window);
+		focus_window(window);
 	}
 }
 

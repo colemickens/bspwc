@@ -111,37 +111,3 @@ struct window *window_at(const struct backend *backend, const double x,
 
 	return NULL;
 }
-
-void focus_window(struct backend *backend, struct window *window)
-{
-	if (window == NULL)
-	{
-		return;
-	}
-
-	struct server *server = backend->server;
-	struct input *input = server->input;
-	struct wlr_seat *seat = input->seat;
-	struct wlr_surface *previous_surface = seat->keyboard_state.focused_surface;
-
-	if (previous_surface == window->wlr_surface)
-	{
-		return;
-	}
-
-	wlr_log(WLR_DEBUG, "Focusing window %p", (void*)window);
-
-	if (previous_surface)
-	{
-		// FIXME: make that modular for other surfaces
-		struct wlr_xdg_surface_v6 *previous_xdg_v6 =
-			wlr_xdg_surface_v6_from_wlr_surface(previous_surface);
-		wlr_xdg_toplevel_v6_set_activated(previous_xdg_v6, false);
-	}
-
-	wlr_xdg_toplevel_v6_set_activated(window->wlr_xdg_surface_v6, false);
-
-	struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat);
-	wlr_seat_keyboard_notify_enter(seat, window->wlr_surface,
-			keyboard->keycodes, keyboard->num_keycodes, &keyboard->modifiers);
-}
