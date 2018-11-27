@@ -14,7 +14,7 @@ bool handle_keybinding(uint32_t modifiers, const xkb_keysym_t *syms, int nsyms)
 		xkb_keysym_get_name(syms[i], keysym_name, sizeof(keysym_name));
 		wlr_log(WLR_DEBUG, "%s", keysym_name);
 	}
-	return true;
+	return false;
 }
 
 void handle_keyboard_key(struct wl_listener *listener, void *data)
@@ -41,8 +41,9 @@ void handle_keyboard_key(struct wl_listener *listener, void *data)
 
 	if (!handled)
 	{
-		wlr_seat_set_keyboard(keyboard->input->seat, keyboard->device);
-		wlr_seat_keyboard_notify_key(keyboard->input->seat,
+		struct wlr_seat *seat = keyboard->input->seat;
+		wlr_seat_set_keyboard(seat, keyboard->device);
+		wlr_seat_keyboard_notify_key(seat,
 				event->time_msec, event->keycode, event->state);
 	}
 }

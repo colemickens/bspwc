@@ -47,16 +47,19 @@ void handle_xdg_surface_v6_map(struct wl_listener *listener, void *data)
 	assert(xdg_surface_v6 != NULL);
 
 	struct window *window = xdg_surface_v6->window;
-	struct wlr_xdg_surface_v6 *wlr_xdg_surface_v6 = window->wlr_xdg_surface_v6;
+	assert(window);
+
+	window->wlr_surface = window->wlr_xdg_surface_v6->surface;
 
 	// Get wlr_xdg_surface_v6 size
-	struct wlr_box size = get_size_wlr_xdg_surface_v6(wlr_xdg_surface_v6);
+	struct wlr_box size = get_size_wlr_xdg_surface_v6(
+			window->wlr_xdg_surface_v6);
 
 	// Give the size to the window
 	window->width = size.width;
 	window->height = size.height;
 
-	map_window(window, window->wlr_xdg_surface_v6->surface);
+	focus_window(window);
 }
 
 void handle_xdg_surface_v6_unmap(struct wl_listener *listener, void *data)

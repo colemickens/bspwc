@@ -33,10 +33,12 @@ void cursor_motion(struct cursor *cursor, uint32_t time)
 	if (window != NULL)
 	{
 		struct wlr_surface *surface = window->wlr_surface;
-		bool focus_changed = seat->pointer_state.focused_surface != surface;
+		assert(surface);
 
 		wlr_seat_pointer_notify_enter(seat, surface, cursor->wlr_cursor->x,
 				cursor->wlr_cursor->y);
+
+		bool focus_changed = seat->pointer_state.focused_surface != surface;
 		if (!focus_changed)
 		{
 			wlr_seat_pointer_notify_motion(seat, time, cursor->wlr_cursor->x,
