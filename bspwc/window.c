@@ -106,20 +106,6 @@ void render_window(const struct window *window)
 	}
 }
 
-void map_window(struct window *window, struct wlr_surface *wlr_surface)
-{
-	assert(window->wlr_surface == NULL);
-
-	window->wlr_surface = wlr_surface;
-
-	struct wlr_subsurface *wlr_subsurface = NULL;
-	wl_list_for_each(wlr_subsurface, &window->wlr_surface->subsurfaces,
-			parent_link)
-	{
-		// handle subsurfaces
-	}
-}
-
 void focus_window(struct window *window)
 {
 	if (window == NULL)
@@ -147,7 +133,7 @@ void focus_window(struct window *window)
 		wlr_xdg_toplevel_v6_set_activated(previous_xdg_v6, false);
 	}
 
-	wlr_xdg_toplevel_v6_set_activated(window->wlr_xdg_surface_v6, false);
+	wlr_xdg_toplevel_v6_set_activated(window->wlr_xdg_surface_v6, true);
 
 	struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat);
 	wlr_seat_keyboard_notify_enter(seat, window->wlr_surface,
