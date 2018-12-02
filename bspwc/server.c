@@ -76,6 +76,12 @@ bool config_server(struct server* server)
 	if (server->socket_name == NULL)
 	{
 		server->socket_name = malloc(strlen(BSPWC_DEFAULT_SOCKET) + 1);
+		if (server->socket_name == NULL)
+		{
+			wlr_log(WLR_ERROR, "Failed to allocate memory for "
+					"server->socket_name");
+			return false;
+		}
 		strcpy(server->socket_name, BSPWC_DEFAULT_SOCKET);
 	}
 
@@ -126,6 +132,11 @@ bool config_server(struct server* server)
 
 	// Init default behaviors
 	server->config = create_config();
+	if (!server->config)
+	{
+		wlr_log(WLR_ERROR, "Failed to create config struct");
+		return false;
+	}
 
 	return true;
 }

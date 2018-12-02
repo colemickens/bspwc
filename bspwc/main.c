@@ -80,11 +80,17 @@ int main(int argc, char *argv[])
 				break;
 			case 'c':
 				config_file = malloc(strlen(optarg) + 1);
-				strcpy(config_file, optarg);
+				if (config_file != NULL)
+				{
+					strcpy(config_file, optarg);
+				}
 				break;
 			case 's':
 				server.socket_name = malloc(strlen(optarg) + 1);
-				strcpy(server.socket_name, optarg);
+				if (server.socket_name != NULL)
+				{
+					strcpy(server.socket_name, optarg);
+				}
 				break;
 			case 'v':
 				printf("%s\n", BSPWC_VERSION);
@@ -149,6 +155,13 @@ int main(int argc, char *argv[])
 		config_file = malloc(
 			strlen(home_dir) + strlen(BSPWC_DEFAULT_CONFIG_FILE) + 1
 		);
+		if (config_file == NULL)
+		{
+			wlr_log(WLR_ERROR, "Failed to allocate memory for "
+					"config file string");
+			terminate_server(&server);
+			exit(EXIT_FAILURE);
+		}
 		config_file[0] = '\0';
 
 		strcat(config_file, home_dir);
