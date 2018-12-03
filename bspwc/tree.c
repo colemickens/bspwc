@@ -13,6 +13,10 @@ struct node *create_node()
 		node->left = NULL;
 		node->right = NULL;
 	}
+	else
+	{
+		wlr_log(WLR_ERROR, "Failed to create node");
+	}
 
 	return node;
 }
@@ -70,7 +74,6 @@ bool insert_node(const struct server *server, struct node **root,
 		struct node* other_child = create_node();
 		if (other_child == NULL)
 		{
-			wlr_log(WLR_ERROR, "Failed to create child node");
 			return false;
 		}
 		other_child->window = (*root)->window;

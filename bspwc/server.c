@@ -134,7 +134,6 @@ bool config_server(struct server* server)
 	server->config = create_config();
 	if (!server->config)
 	{
-		wlr_log(WLR_ERROR, "Failed to create config struct");
 		return false;
 	}
 

@@ -19,6 +19,10 @@ struct config *create_config()
 		config->polarity = LEFT;
 		config->split = VERTICAL;
 	}
+	else
+	{
+		wlr_log(WLR_ERROR, "Failed to create config struct");
+	}
 
 	return config;
 }
