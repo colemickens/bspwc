@@ -8,17 +8,19 @@
 #include "bspwc/window.h"
 
 #define DEFAULT_DESKTOP_NAME "desktop"
+#define DESKTOP_NAME_SIZE 8
 
 struct desktop
 {
 	struct output *output;
 
-	char name[8]; // is 8 chars too much or too little ?
+	char name[DESKTOP_NAME_SIZE];
 
 	struct desktop *next;
 	struct desktop *previous;
 
 	struct node* root;
+	struct wl_list nodes; // node::link
 };
 
 struct desktop *create_desktop(struct output *output);

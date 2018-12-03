@@ -32,7 +32,7 @@ struct backend
 	struct wlr_gamma_control_manager *wlr_gamma_control_manager;
 	struct wlr_screenshooter *wlr_screenshooter;
 	struct wlr_server_decoration_manager *wlr_server_decoration_manager;
-	struct wlr_gtk_primary_selection_device_manager 
+	struct wlr_gtk_primary_selection_device_manager
 		*wlr_gtk_primary_selection_device_manager;
 	struct wlr_idle *wlr_idle;
 	struct wlr_idle_inhibit_manager_v1 *wlr_idle_inhibit;
@@ -51,5 +51,7 @@ void destroy_backend(struct backend *backend);
 
 void render_surface(struct wlr_output *wlr_output,
 		struct wlr_surface *wlr_surface, const int x, const int y);
+struct window *window_at(const struct backend *backend, const double x,
+		const double y);
 
 #endif // BACKEND_H

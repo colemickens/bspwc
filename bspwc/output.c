@@ -16,7 +16,6 @@ void output_destroy_notify(struct wl_listener* listener, void* data)
 void output_frame_notify(struct wl_listener* listener, void* data)
 {
 	struct output *output = wl_container_of(listener, output, frame);
-	struct backend *backend = output->server->backend;
 	struct wlr_output *wlr_output = data;
 	struct wlr_renderer *renderer = wlr_backend_get_renderer(wlr_output->backend);
 
@@ -28,6 +27,7 @@ void output_frame_notify(struct wl_listener* listener, void* data)
 		wlr_renderer_clear(renderer, color);
 
 		render_tree(output->desktop->root);
+		wlr_output_render_software_cursors(wlr_output, NULL);
 
 		wlr_output_swap_buffers(wlr_output, NULL, NULL);
 	wlr_renderer_end(renderer);

@@ -1,6 +1,6 @@
 #include "bspwc/tree.h"
 
-struct node *create_node()
+struct node *create_node(struct desktop *desktop)
 {
 	wlr_log(WLR_DEBUG, "Creating node");
 	struct node *node = malloc(sizeof(struct node));
@@ -17,6 +17,8 @@ struct node *create_node()
 	{
 		wlr_log(WLR_ERROR, "Failed to create node");
 	}
+
+	wl_list_insert(&desktop->nodes, &node->link);
 
 	return node;
 }
@@ -35,6 +37,8 @@ void destroy_node(struct node *node)
 	}
 
 	destroy_window(node->window);
+
+	wl_list_remove(&node->link);
 
 	free(node);
 }
@@ -58,7 +62,7 @@ bool insert_node(const struct server *server, struct node **root,
 		*root = child;
 
 		// TODO: padding
-		position_window((*root)->window, 0, 0);
+		set_window_position((*root)->window, 0, 0);
 		resize_window((*root)->window, output->wlr_output->width,
 				output->wlr_output->height);
 	}
@@ -71,7 +75,7 @@ bool insert_node(const struct server *server, struct node **root,
 		uint32_t width = (*root)->window->width;
 		uint32_t height = (*root)->window->height;
 
-		struct node* other_child = create_node();
+		struct node* other_child = create_node(output->desktop);
 		if (other_child == NULL)
 		{
 			return false;
@@ -93,15 +97,15 @@ bool insert_node(const struct server *server, struct node **root,
 		other_child->parent = (*root);
 		child->parent = (*root);
 
-
 		if (config->split == VERTICAL)
 		{
 			// Resize left
-			position_window((*root)->left->window, x, y);
+			set_window_position((*root)->left->window, x, y);
 			resize_window((*root)->left->window, (width / 2), height);
 
 			// Resize right
-			position_window((*root)->right->window, x + ((double)width / 2), y);
+			set_window_position((*root)->right->window, x + ((double)width / 2),
+					y);
 			resize_window((*root)->right->window, (width / 2), height);
 		}
 		else // config->split == HORIZONTAL
@@ -114,7 +118,6 @@ bool insert_node(const struct server *server, struct node **root,
 	return true;
 }
 
-static int time_log = 0;
 void render_tree(const struct node *root)
 {
 	if (root == NULL)
@@ -124,17 +127,6 @@ void render_tree(const struct node *root)
 
 	if (root->window != NULL)
 	{
-		time_log++;
-
-		// TODO: Remove before merge
-		if (time_log == 120)
-		{
-			wlr_log(WLR_INFO, "Rendering %p %f,%f %lu,%lu", root->window,
-					root->window->x, root->window->y, (unsigned long)root->window->width,
-					(unsigned long)root->window->height);
-			
-			time_log = 0;
-		}
 		render_window(root->window);
 	}
 	else // root->window == NULL

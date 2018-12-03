@@ -38,18 +38,25 @@ void handle_keyboard_key(struct wl_listener *listener, void *data)
 	uint32_t modifiers =
 		wlr_keyboard_get_modifiers(keyboard->device->keyboard);
 	bool handled = handle_keybinding(modifiers, syms, nsyms);
-	
+
 	if (!handled)
 	{
-		wlr_seat_set_keyboard(keyboard->input->seat, keyboard->device);
-		wlr_seat_keyboard_notify_key(keyboard->input->seat,
+		struct wlr_seat *seat = keyboard->input->seat;
+		wlr_seat_set_keyboard(seat, keyboard->device);
+		wlr_seat_keyboard_notify_key(seat,
 				event->time_msec, event->keycode, event->state);
 	}
 }
 
 void handle_keyboard_modifiers(struct wl_listener *listener, void *data)
 {
-	// TODO
+	struct keyboard *keyboard = wl_container_of(listener, keyboard, modifiers);
+
+	struct wlr_seat *seat = keyboard->input->seat;
+	wlr_seat_set_keyboard(seat, keyboard->device);
+
+	wlr_seat_keyboard_notify_modifiers(seat,
+			&keyboard->device->keyboard->modifiers);
 }
 
 struct keyboard *create_keyboard(struct input *input,

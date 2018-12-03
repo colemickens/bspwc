@@ -29,12 +29,15 @@ void handle_new_input(struct wl_listener *listener, void *data)
 	wlr_log(WLR_DEBUG, "New input device: %s (%s) %d:%d", device->name,
 			device_type(type), device->vendor, device->product);
 
+	uint32_t capabilities = 0;
 	if (type == WLR_INPUT_DEVICE_KEYBOARD)
 	{
 		if (input->keyboard == NULL)
 		{
 			input->keyboard = create_keyboard(input, device);
 		}
+
+		capabilities |= WL_SEAT_CAPABILITY_KEYBOARD;
 	}
 	else if (WLR_INPUT_DEVICE_POINTER)
 	{
@@ -42,17 +45,31 @@ void handle_new_input(struct wl_listener *listener, void *data)
 		{
 			input->cursor = create_cursor(input, device);
 		}
+
+		capabilities |= WL_SEAT_CAPABILITY_POINTER;
 	}
 	else
 	{
 		wlr_log(WLR_INFO, "Device %s (%s) not implemented",
 				device->name, device_type(type));
 	}
+
+	wlr_seat_set_capabilities(input->seat, capabilities);
 }
 
 void handle_request_cursor(struct wl_listener *listener, void *data)
 {
-	wlr_log(WLR_INFO, "TODO: handle_request_cursor");
+	wlr_log(WLR_DEBUG, "Input request cursor");
+	struct input *input = wl_container_of(listener, input, request_cursor);
+	struct wlr_seat_pointer_request_set_cursor_event *event = data;
+	struct wlr_seat_client *focused_client =
+		input->seat->pointer_state.focused_client;
+
+	if (focused_client == event->seat_client)
+	{
+		wlr_cursor_set_surface(input->cursor->wlr_cursor, event->surface,
+				event->hotspot_x, event->hotspot_y);
+	}
 }
 
 struct input *create_input(struct server *server)

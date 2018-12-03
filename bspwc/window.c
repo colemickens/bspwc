@@ -37,7 +37,19 @@ void destroy_window(struct window *window)
 	free(window);
 }
 
-void position_window(struct window *window, double x, double y)
+struct wlr_box get_window_box(const struct window *window)
+{
+	struct wlr_box box = {
+		.x = window->x,
+		.y = window->y,
+		.width = window->width,
+		.height = window->height,
+	};
+
+	return box;
+}
+
+void set_window_position(struct window *window, const double x, const double y)
 {
 	if (window == NULL)
 	{
@@ -94,16 +106,36 @@ void render_window(const struct window *window)
 	}
 }
 
-void map_window(struct window *window, struct wlr_surface *wlr_surface)
+void focus_window(struct window *window)
 {
-	assert(window->wlr_surface == NULL);
-
-	window->wlr_surface = wlr_surface;
-
-	struct wlr_subsurface *wlr_subsurface = NULL;
-	wl_list_for_each(wlr_subsurface, &window->wlr_surface->subsurfaces,
-			parent_link)
+	if (window == NULL)
 	{
-		// handle subsurfaces
+		return;
 	}
+
+	struct server *server = window->desktop->output->server;
+	struct input *input = server->input;
+	struct wlr_seat *seat = input->seat;
+	struct wlr_surface *previous_surface = seat->keyboard_state.focused_surface;
+
+	if (previous_surface == window->wlr_surface)
+	{
+		return;
+	}
+
+	wlr_log(WLR_DEBUG, "Focusing window %p", (void*)window);
+
+	if (previous_surface)
+	{
+		// FIXME: make that modular for other surfaces
+		struct wlr_xdg_surface_v6 *previous_xdg_v6 =
+			wlr_xdg_surface_v6_from_wlr_surface(previous_surface);
+		wlr_xdg_toplevel_v6_set_activated(previous_xdg_v6, false);
+	}
+
+	wlr_xdg_toplevel_v6_set_activated(window->wlr_xdg_surface_v6, true);
+
+	struct wlr_keyboard *keyboard = wlr_seat_get_keyboard(seat);
+	wlr_seat_keyboard_notify_enter(seat, window->wlr_surface,
+			keyboard->keycodes, keyboard->num_keycodes, &keyboard->modifiers);
 }

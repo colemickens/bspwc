@@ -53,9 +53,10 @@ struct window
 struct window *create_window();
 void destroy_window(struct window *window);
 
-void position_window(struct window *window, double x, double y);
+struct wlr_box get_window_box(const struct window *window);
+void set_window_position(struct window *window, const double x, const double y);
 void resize_window(struct window *window, uint32_t width, uint32_t height);
 void render_window(const struct window *window);
-void map_window(struct window *window, struct wlr_surface *wlr_surface);
+void focus_window(struct window *window);
 
 #endif // WINDOW_H

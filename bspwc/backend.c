@@ -22,7 +22,8 @@ struct backend* create_backend(struct server* server)
 		);
 	backend->wlr_gamma_control_manager = wlr_gamma_control_manager_create(server->display);
 	backend->wlr_screenshooter = wlr_screenshooter_create(server->display);
-	backend->wlr_gtk_primary_selection_device_manager = wlr_gtk_primary_selection_device_manager_create(server->display);
+	backend->wlr_gtk_primary_selection_device_manager =
+			wlr_gtk_primary_selection_device_manager_create(server->display);
 	backend->wlr_idle = wlr_idle_create(server->display);
 	backend->wlr_idle_inhibit = wlr_idle_inhibit_v1_create(server->display);
 	backend->wlr_linux_dmabuf = wlr_linux_dmabuf_v1_create(server->display, wlr_backend_get_renderer(backend->wlr_backend));
@@ -84,4 +85,30 @@ void render_surface(struct wlr_output *wlr_output,
 		int pos_y = y + wlr_subsurface_state->dy;
 		render_surface(wlr_output, wlr_subsurface->surface, pos_x, pos_y);
 	}
+}
+
+struct window *window_at(const struct backend *backend, const double x,
+		const double y)
+{
+	struct output *output = NULL;
+	wl_list_for_each(output, &backend->outputs, link)
+	{
+		struct node *node = NULL;
+		wl_list_for_each(node, &output->desktop->nodes, link)
+		{
+			struct window *window = node->window;
+			if (window == NULL)
+			{
+				continue;
+			}
+
+			struct wlr_box box = get_window_box(window);
+			if (wlr_box_contains_point(&box, x, y))
+			{
+				return window;
+			}
+		}
+	}
+
+	return NULL;
 }
