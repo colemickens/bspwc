@@ -5,11 +5,18 @@ struct node *create_node(struct desktop *desktop)
 	wlr_log(WLR_DEBUG, "Creating node");
 	struct node *node = malloc(sizeof(struct node));
 
-	node->window = NULL;
+	if (node != NULL)
+	{
+		node->window = NULL;
 
-	node->parent = NULL;
-	node->left = NULL;
-	node->right = NULL;
+		node->parent = NULL;
+		node->left = NULL;
+		node->right = NULL;
+	}
+	else
+	{
+		wlr_log(WLR_ERROR, "Failed to create node");
+	}
 
 	wl_list_insert(&desktop->nodes, &node->link);
 
@@ -69,6 +76,10 @@ bool insert_node(const struct server *server, struct node **root,
 		uint32_t height = (*root)->window->height;
 
 		struct node* other_child = create_node(output->desktop);
+		if (other_child == NULL)
+		{
+			return false;
+		}
 		other_child->window = (*root)->window;
 		(*root)->window = NULL;
 

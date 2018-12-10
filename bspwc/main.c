@@ -80,10 +80,24 @@ int main(int argc, char *argv[])
 				break;
 			case 'c':
 				config_file = malloc(strlen(optarg) + 1);
+				if (config_file == NULL)
+				{
+					wlr_log_init(WLR_ERROR, NULL);
+					wlr_log(WLR_ERROR, "Failed to allocate "
+						"memory for config file string");
+					exit(EXIT_FAILURE);
+				}
 				strcpy(config_file, optarg);
 				break;
 			case 's':
 				server.socket_name = malloc(strlen(optarg) + 1);
+				if (server.socket_name == NULL)
+				{
+					wlr_log_init(WLR_ERROR, NULL);
+					wlr_log(WLR_ERROR, "Failed to allocate "
+						"memory for socket name string");
+					exit(EXIT_FAILURE);
+				}
 				strcpy(server.socket_name, optarg);
 				break;
 			case 'v':
@@ -149,6 +163,13 @@ int main(int argc, char *argv[])
 		config_file = malloc(
 			strlen(home_dir) + strlen(BSPWC_DEFAULT_CONFIG_FILE) + 1
 		);
+		if (config_file == NULL)
+		{
+			wlr_log(WLR_ERROR, "Failed to allocate memory for "
+					"config file string");
+			terminate_server(&server);
+			exit(EXIT_FAILURE);
+		}
 		config_file[0] = '\0';
 
 		strcat(config_file, home_dir);

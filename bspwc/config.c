@@ -13,9 +13,16 @@ struct config *create_config()
 
 	struct config *config = malloc(sizeof(struct config));
 
-	config->mode = MANUAL;
-	config->polarity = LEFT;
-	config->split = VERTICAL;
+	if (config != NULL)
+	{
+		config->mode = MANUAL;
+		config->polarity = LEFT;
+		config->split = VERTICAL;
+	}
+	else
+	{
+		wlr_log(WLR_ERROR, "Failed to create config struct");
+	}
 
 	return config;
 }
